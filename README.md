@@ -29,4 +29,9 @@ For a specific race in a given season (e.g., the **2021 Abu Dhabi Prix**), the u
     - `proxy` under `/client/package.json`
     - `flaskServer` under `/client/src/App.tsx`
 
-Great! After following those steps, you should now be seeing the main interface for the machine learning model.
+**Great!** After following those steps, you should now be seeing the main interface for the machine learning model.
+
+---
+**Note:** Remember to deactivate the Python virtual environment when you're done.
+- Navigate to `/flask-server/venv/Scripts`.
+- Deactivate using `deactivate`, or simply click on the `deactivate.bat` file.
