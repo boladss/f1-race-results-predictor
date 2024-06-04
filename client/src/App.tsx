@@ -162,7 +162,7 @@ function App() {
 	};
 
   return <>
-			<div className="flex items-center justify-center m-10 space-x-10">
+			<div className="flex m-10 space-x-10">
 				<div className="flex float-start flex-col space-y-5">
 					{/* {years.map((item, index) => (
 						<div key={index} className="text-center text-sm p-0 m-1 bg-red-800 rounded-3xl">
