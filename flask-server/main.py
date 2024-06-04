@@ -44,8 +44,6 @@ def get_drivers(race):
 @app.route('/predict', methods=['POST'])
 def predict():
   data = request.json
-  print(data['drivers'])
-  data['drivers'].sort(reverse=True)
   return jsonify(data['drivers'])
 
 if __name__ == "__main__":
