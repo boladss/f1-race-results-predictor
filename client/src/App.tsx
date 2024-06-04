@@ -1,54 +1,24 @@
 import { useRef, useState, useEffect } from 'react'
 import './App.css'
 import axios from 'axios' // for API requests
+import YearSelector from './YearSelector.tsx'
+import RaceSelector from './RaceSelector.tsx'
 
 const flaskServer = "http://localhost:5000"
 
-function YearSelector({years, selectedYear, setSelectedYear, setRaces, setSelectedRace, setDrivers, setPrediction}) {
-	return (
-		<div>
-			<label>Select Year:</label>
-			<select 
-				value={selectedYear || null}
-				onChange={e => {
-					setSelectedYear(parseInt(e.target.value));
-					setRaces=([]);
-					setSelectedRace(null);
-					setDrivers([]);
-					setPrediction([]);
-				}} 
-				className="ml-2 p-3 bg-gray-800">
-				<option value="">Select a year</option>
-				{years.map(year => (
-					<option key={year} value={year}>{year}</option>
-				))}
-			</select>
-		</div>
-	)
+export interface Race {
+	round: number;
+	name: string;
 }
 
-function RaceSelector({races, selectedRace, setSelectedRace, setDrivers, setPrediction}) {
-	return (
-		<div>
-			<label>Select Race:</label>
-			<select 
-				value={selectedRace || null}
-				onChange={e => {
-					setSelectedRace(e.target.value);
-					setDrivers([]);
-					setPrediction([]);
-				}} 
-				className="ml-2 p-3 bg-gray-800">
-				<option value="">Select a race</option>
-				{races && races.map(race => (
-					<option key={race.round} value={race.round}>{race.name}</option>
-				))}
-			</select>
-		</div>
-	)
+export interface Driver {
+	driverId: number;
+	grid: number; 
+	name: string;
 }
 
-function DriverArranger({drivers, setDrivers}) {
+
+function DriverArranger({drivers, setDrivers}: {drivers: Driver[], setDrivers: (drivers: Driver[] ) => void}) {
 	// Draggable list based on Darwin Tech: https://www.youtube.com/watch?v=_nZCvxJOPwU
 	const dragDriver = useRef<number>(0);
 	const draggedOverDriver = useRef<number>(0);
@@ -77,7 +47,7 @@ function DriverArranger({drivers, setDrivers}) {
 				onDragOver={(e) => e.preventDefault()}
 				>
 					<td className="flex w-7 m-0 justify-center bg-gray-700 rounded px-1" >{index+1}</td>
-					<td key={driver.driverId} value={driver.driverId} className="pl-2">{driver.name}</td>
+					<td key={driver.driverId} className="pl-2">{driver.name}</td>
 				</tr>
 			))}
 			</table>
@@ -86,12 +56,12 @@ function DriverArranger({drivers, setDrivers}) {
 }
 
 function App() {
-	const [years, setYears] = useState([]);
-	const [selectedYear, setSelectedYear] = useState(null);
-	const [races, setRaces] = useState([]);
-	const [selectedRace, setSelectedRace] = useState(null);
-	const [drivers, setDrivers] = useState([]);
-	const [prediction, setPrediction] = useState([]);
+	const [years, setYears] = useState<number[]>([]);
+	const [selectedYear, setSelectedYear] = useState<number | null>(null);
+	const [races, setRaces] = useState<Race[]>([]);
+	const [selectedRace, setSelectedRace] = useState<Race | null>(null);
+	const [drivers, setDrivers] = useState<Driver[]>([]);
+	const [prediction, setPrediction] = useState<Driver[]>([]);
 
   const fetchYears = async () => {
 		try {
@@ -106,12 +76,12 @@ function App() {
 		fetchYears()
 	}, [])
 
-	const fetchRaces = async (selectedYear) => {
+	const fetchRaces = async (selectedYear: number | null) => {
 		if (selectedYear) {
 			try {
 				const response = await axios.get(`${flaskServer}/races/${selectedYear}`);
 				// console.log(response.data);
-				setRaces(response.data);
+				setRaces(response.data.sort((a: Race, b: Race) => a.round - b.round));
 			} catch (error) {
 				console.error(`Error fetching races: ${error}`);
 			}
@@ -122,12 +92,12 @@ function App() {
 	}, [selectedYear])
 
 
-	const fetchDrivers = async (selectedYear, selectedRace) => {
+	const fetchDrivers = async (selectedYear: number | null, selectedRace: Race | null) => {
 		if (selectedRace) {
 			try {
-				const response = await axios.get(`${flaskServer}/drivers/${selectedYear}/${selectedRace}`);
+				const response = await axios.get(`${flaskServer}/drivers/${selectedYear}/${selectedRace.round}`);
 				// console.log(response.data);
-				setDrivers(response.data.sort((a,b) => a.grid - b.grid)) // Ascending order
+				setDrivers(response.data.sort((a: Driver, b: Driver) => a.grid - b.grid)) // Ascending order
 			} catch (error) {
 				console.error(`Error fetching drivers: ${error}`);
 			}
@@ -164,13 +134,8 @@ function App() {
   return <>
 			<div className="flex items-center justify-center m-10 space-x-10">
 				<div className="flex float-start flex-col space-y-5">
-					{/* {years.map((item, index) => (
-						<div key={index} className="text-center text-sm p-0 m-1 bg-red-800 rounded-3xl">
-						<span>{item}</span>
-						</div>
-					))} */}
 					<h1 className="font-black text-3xl">F1 Race Results Predictor</h1>
-					<YearSelector years={years} selectedYear={selectedYear} setSelectedYear={setSelectedYear} setRaces={setRaces} setSelectedRace={setSelectedRace} setDrivers={setDrivers} setPrediction={setPrediction} />
+					<YearSelector years={years} selectedYear={selectedYear} setSelectedYear={setSelectedYear} setSelectedRace={setSelectedRace} setDrivers={setDrivers} setPrediction={setPrediction} />
 					<RaceSelector races={races} selectedRace={selectedRace} setSelectedRace={setSelectedRace} setDrivers={setDrivers} setPrediction={setPrediction} />			
 					<button onClick={handlePredict} disabled={!drivers.length} className="bg-gray-800 p-3 text-xl rounded-3xl">Predict!</button>		
 					<button onClick={handleClearInput} className="bg-gray-800 p-3 text-l rounded-3xl">Clear inputs</button>		
@@ -183,10 +148,10 @@ function App() {
 						<div>
 							<h2 className="font-bold text-xl mb-2 text-center">Prediction Results:</h2>
 							<table>
-								{prediction.map((driver, index) => (
+								{prediction.map((driver: Driver, index: number) => (
 								<tr className="relative flex rounded p-1 m-1 bg-gray-800">
 									<td className="flex w-7 m-0 justify-center bg-gray-700 rounded px-1" >{index+1}</td>
-									<td key={driver.driverId} value={driver.driverId} className="pl-2">{driver.name}</td>
+									<td key={driver.driverId} className="pl-2">{driver.name}</td>
 								</tr>
 								))}
 							</table>

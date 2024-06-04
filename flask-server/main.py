@@ -39,17 +39,19 @@ def get_years():
 def get_races(year):
   races_in_year = races.loc[races['year'] == year, ['round', 'name']]
   races_data = races_in_year.to_dict(orient='records')
+  
   # print(races_data)
-  # races_data = races_in_year['name'].tolist()
   return jsonify(races_data)
 
 
 @app.route('/drivers/<int:year>/<int:race>', methods=['GET'])
 def get_drivers(year, race):
   drivers_in_race = results.loc[(results['year'] == year) & (results['round'] == race), ['driverId', 'grid', 'forename', 'surname']]
+  
   drivers_in_race['name'] = drivers_in_race['forename'] + " " + drivers_in_race['surname']
   drivers_in_race.drop(['forename', 'surname'], axis=1, inplace=True)
   drivers_data = drivers_in_race.to_dict(orient='records')
+  
   # print(drivers_data)
   return jsonify(drivers_data)
 
@@ -57,7 +59,7 @@ def get_drivers(year, race):
 @app.route('/predict', methods=['POST'])
 def predict():
   data = request.json
-  print(data)
+  # print(data)
   return jsonify(data['drivers'])
   # return jsonify(data['drivers'])
 
