@@ -1,7 +1,7 @@
 # f1-race-results-predictor
  A machine learning model to predict full race results in Formula 1
- - Jose Antonio S. Bolado ((boladss)[https://github.com/boladss])
- - Gerimiah L. Juganas ((gljuganas)[https://github.com/gljuganas])
+ - Jose Antonio S. Bolado ([boladss](https://github.com/boladss))
+ - Gerimiah L. Juganas ([gljuganas](https://github.com/gljuganas))
 
 ## What does this predict?
 For a specific race in a given season (e.g., the **2021 Abu Dhabi Prix**), the user can rearrange the drivers on the starting grid, and the model will predict the final results of all of the drivers.
