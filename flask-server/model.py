@@ -44,7 +44,9 @@ def model(year, round, drivers):
   
   query = query_dataset(year, round, drivers)
   
-  model = joblib.load('models/mlp_model.joblib')
+  # Model used
+  # model = joblib.load('models/mlp_model.joblib')
+  model = joblib.load('models/gbr_model.joblib')
   results = []
   
   for index, row in query.iterrows():
