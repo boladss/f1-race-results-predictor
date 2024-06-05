@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
 from model_test import model
+from model import model
 
 app = Flask(__name__)
 cors = CORS(app, origins="*") 
@@ -11,19 +12,9 @@ cors = CORS(app, origins="*")
 years = [year for year in range(2014, 2024)]
 drivers = pd.read_csv("assets/drivers.csv")
 races = pd.read_csv("assets/races.csv")
-results = pd.read_csv("assets/results-dataset.csv")
 
-# Mock data
-# races = {
-#     2022: ['Race 1', 'Race 2', 'Race 3'],
-#     2023: ['Race 1', 'Race 2', 'Race 3'],
-#     2024: ['Race 1', 'Race 2', 'Race 3']
-# }
-# drivers = {
-#     'Race 1': ['Driver A', 'Driver B', 'Driver C'],
-#     'Race 2': ['Driver D', 'Driver E', 'Driver F'],
-#     'Race 3': ['Driver G', 'Driver H', 'Driver I']
-# }
+df = pd.read_csv("assets/results-dataset.csv")
+results = df[(df.year >= 2014) & (df.year < 2024)]
 
 # Test API
 @app.route("/", methods=['GET'])
@@ -59,9 +50,13 @@ def get_drivers(year, race):
 @app.route('/predict', methods=['POST'])
 def predict():
   data = request.json
-  # print(data)
-  return jsonify(data['drivers'])
-  # return jsonify(data['drivers'])
+  year = data['year']
+  round = data['race']['round']
+  drivers = data['drivers']
+  
+  results = model(year, round, drivers)
+
+  return jsonify(results)
 
 if __name__ == "__main__":
   app.run(debug=True)

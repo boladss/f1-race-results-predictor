@@ -17,6 +17,10 @@ export interface Driver {
 	name: string;
 }
 
+export interface Prediction extends Driver {
+	position: number;
+}
+
 
 function DriverArranger({drivers, setDrivers}: {drivers: Driver[], setDrivers: (drivers: Driver[] ) => void}) {
 	// Draggable list based on Darwin Tech: https://www.youtube.com/watch?v=_nZCvxJOPwU
@@ -26,10 +30,17 @@ function DriverArranger({drivers, setDrivers}: {drivers: Driver[], setDrivers: (
 	function handleDriverSort() {
 		const driversClone = [...drivers];
 
+		// Grid values
+		const currentPositionDrag: number = driversClone[dragDriver.current].grid;
+		const currentPositionOver: number = driversClone[draggedOverDriver.current].grid;
+
 		// Swap positions
 		const temp = driversClone[dragDriver.current];
 		driversClone[dragDriver.current] = driversClone[draggedOverDriver.current];
 		driversClone[draggedOverDriver.current] = temp;
+
+		driversClone[dragDriver.current].grid = currentPositionDrag;
+		driversClone[draggedOverDriver.current].grid = currentPositionOver;
 		
 		setDrivers(driversClone);
 	}
@@ -61,7 +72,7 @@ function App() {
 	const [races, setRaces] = useState<Race[]>([]);
 	const [selectedRace, setSelectedRace] = useState<Race | null>(null);
 	const [drivers, setDrivers] = useState<Driver[]>([]);
-	const [prediction, setPrediction] = useState<Driver[]>([]);
+	const [prediction, setPrediction] = useState<Prediction[]>([]);
 
   const fetchYears = async () => {
 		try {
@@ -148,12 +159,18 @@ function App() {
 						<div>
 							<h2 className="font-bold text-xl mb-2 text-center">Prediction Results:</h2>
 							<table>
-								{prediction.map((driver: Driver, index: number) => (
-								<tr className="relative flex rounded p-1 m-1 bg-gray-800">
-									<td className="flex w-7 m-0 justify-center bg-gray-700 rounded px-1" >{index+1}</td>
-									<td key={driver.driverId} className="pl-2">{driver.name}</td>
-								</tr>
-								))}
+								{prediction.map((driver: Prediction, index: number) => {
+									const difference = index+1 - driver.grid;
+									let bgColorClass = 'bg-gray-800';
+									if (difference < 0) bgColorClass = 'bg-green-600'
+									if (difference > 0) bgColorClass = 'bg-red-600'
+									return (
+										<tr className={`relative flex rounded p-1 m-1 ${bgColorClass}`}>
+											<td className="flex w-7 m-0 justify-center bg-gray-700 rounded px-1" >{index+1}</td>
+											<td key={driver.driverId} className="pl-2">{driver.name}</td>
+										</tr>
+									)
+								})}
 							</table>
 						</div>
 					)}

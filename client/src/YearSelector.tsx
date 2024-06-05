@@ -1,4 +1,4 @@
-import { Race, Driver } from './App.tsx'
+import { Race, Driver, Prediction } from './App.tsx'
 
 interface YearSelectorProps {
   years: number[];
@@ -6,7 +6,7 @@ interface YearSelectorProps {
   setSelectedYear: (year: number | null) => void;
   setSelectedRace: (race: Race | null) => void;
   setDrivers: (drivers: Driver[]) => void;
-  setPrediction: (drivers: Driver[]) => void;
+  setPrediction: (drivers: Prediction[]) => void;
 }
 
 export default function YearSelector({years, selectedYear, setSelectedYear, setSelectedRace, setDrivers, setPrediction}: YearSelectorProps) {
