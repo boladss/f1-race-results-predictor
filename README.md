@@ -5,7 +5,7 @@
 For a specific race in a given season (e.g., the **2021 Abu Dhabi Prix**), the user can rearrange the drivers on the starting grid, and the model will predict the final results of all of the drivers.
 
 ## How do I use this predictor?
-**Note:** These instructions assume you are using a Windows device. Some commands may differ between operating systems (e.g., `python` vs. `python3`).
+**Note:** These instructions assume you are using a Windows device. Some commands may differ between operating systems (e.g., `python` vs. `python3`). It also assumes that you already have `npm` and `flask` installed properly.
 
 1. Clone the repository.
 2. Navigate into `f1-race-results-predictor`.
