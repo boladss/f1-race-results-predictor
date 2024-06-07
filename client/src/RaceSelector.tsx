@@ -1,11 +1,11 @@
-import { Race, Driver, Prediction } from './App.tsx'
+import { Race, Driver } from './App.tsx'
 
 interface RaceSelectorProps {
   races: Race[] | null;
   selectedRace: Race | null;
   setSelectedRace: (race: Race | null) => void;
   setDrivers: (drivers: Driver[]) => void;
-  setPrediction: (drivers: Prediction[]) => void;
+  setPrediction: (drivers: Driver[]) => void;
 }
 
 export default function RaceSelector({races, selectedRace, setSelectedRace, setDrivers, setPrediction}: RaceSelectorProps) {
