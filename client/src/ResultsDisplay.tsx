@@ -13,7 +13,7 @@ export default function ResultsDisplay({ driversRef, originalFlag }: { driversRe
       <table>
         {drivers.map((driver: Driver, index: number) => {
           const placesGained = driver.grid - (index+1);
-          let bgColorClass = 'bg-gray-800';
+          let bgColorClass;
 
           switch(true) {
             case placesGained >= 5: bgColorClass = `bg-green-600/100`; break;
