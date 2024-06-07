@@ -12,10 +12,19 @@ export default function ResultsDisplay({ driversRef, originalFlag }: { driversRe
       <h2 className="font-bold text-xl mb-2 text-center">{title}</h2>
       <table>
         {drivers.map((driver: Driver, index: number) => {
-          const difference = index+1 - driver.grid;
+          const placesGained = driver.grid - (index+1);
           let bgColorClass = 'bg-gray-800';
-          if (difference < 0) bgColorClass = 'bg-green-600'
-          if (difference > 0) bgColorClass = 'bg-red-600'
+
+          switch(true) {
+            case placesGained >= 5: bgColorClass = `bg-green-600/100`; break;
+            case placesGained >= 3: bgColorClass = `bg-green-600/75`; break;
+            case placesGained >= 1: bgColorClass = `bg-green-600/50`; break;
+            case placesGained <= -5: bgColorClass = `bg-red-600/100`; break;
+            case placesGained <= -3: bgColorClass = `bg-red-600/75`; break;
+            case placesGained <= -1: bgColorClass = `bg-red-600/50`; break;
+            default: bgColorClass = 'bg-gray-800'; break;
+          }
+
           return (
             <tr className={`relative flex rounded p-1 m-1 ${bgColorClass}`}>
               <td className="flex w-7 m-0 justify-center bg-gray-700 rounded px-1" >{index+1}</td>
