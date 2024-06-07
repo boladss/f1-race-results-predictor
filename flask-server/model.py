@@ -1,5 +1,4 @@
 import pandas as pd
-import json
 import joblib
 
 df = pd.read_csv("assets/results-dataset.csv")
@@ -37,21 +36,25 @@ def query_dataset(year, round, drivers):
   
   return one_hot_encoded_data
 
-def model(year, round, drivers):
-  # print(year)
-  # print(round)
-  # print(drivers)
-  
+def model(model_, year, round, drivers):
+  # Get relevant race results
   query = query_dataset(year, round, drivers)
   
-  # Model used
-  # model = joblib.load('models/mlp_model.joblib')
-  model = joblib.load('models/gbr_model.joblib')
-  results = []
+  # Load model
+  match model_:
+    case 'GBR': live_model = joblib.load('models/gbr_model.joblib')
+    case 'MLP': live_model = joblib.load('models/mlp_model.joblib')
+    case 'CLF': live_model = joblib.load('models/clf_model_2.joblib')
+    case 'NB': live_model = joblib.load('models/nb_model.joblib')
+    case _: live_model = joblib.load('models/gbr_model.joblib')
   
+  
+  results = []  
   for index, row in query.iterrows():
-    prediction = model.predict(row.values.reshape(1,-1))
+    prediction = live_model.predict(row.values.reshape(1,-1))
     results.append({"grid": row['grid'], "result": prediction[0]})
+
+  print(results)
 
   # Get grid values of drivers
   paired_drivers = {driver['grid']: driver for driver in drivers}
