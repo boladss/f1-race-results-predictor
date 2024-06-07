@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import pandas as pd
-from model_test import model
 from model import model
 
 app = Flask(__name__)
@@ -54,8 +53,9 @@ def predict():
   year = data['year']
   round = data['race']['round']
   drivers = data['drivers']
+  model_ = data['model']
   
-  results = model(year, round, drivers)
+  results = model(model_, year, round, drivers)
 
   return jsonify(results)
 

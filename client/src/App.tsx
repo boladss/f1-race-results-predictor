@@ -5,8 +5,11 @@ import YearSelector from './YearSelector.tsx'
 import RaceSelector from './RaceSelector.tsx'
 import DriverArranger from './DriverArranger.tsx'
 import ResultsDisplay from './ResultsDisplay.tsx'
+import ModelSelector from './ModelSelector.tsx'
 
 const flaskServer = "http://localhost:5000"
+
+export type ModelType = "GBR" | "MLP" | "CLF" | "NB";
 
 export interface Race {
 	round: number;
@@ -28,6 +31,9 @@ function App() {
 	const [drivers, setDrivers] = useState<Driver[]>([]);
 	const [prediction, setPrediction] = useState<Driver[]>([]);
 	const [originalFlag, setOriginalFlag] = useState<boolean>(true); // Indicates that the fetched order is still the original order, show actual results
+
+	const models: ModelType[] = ["GBR", "MLP", "CLF", "NB"];
+	const [selectedModel, setSelectedModel] = useState<ModelType>("GBR" as ModelType);
 
   const fetchYears = async () => {
 		try {
@@ -88,7 +94,8 @@ function App() {
 			const response = await axios.post(`${flaskServer}/predict`, {
 				year: selectedYear,
 				race: selectedRace,
-				drivers: drivers
+				drivers: drivers,
+				model: selectedModel
 			});
 			// console.log("Prediction: ", response.data);
 			setPrediction(response.data);
@@ -113,12 +120,22 @@ function App() {
 					<h1 className="font-black text-3xl">F1 Race Results Predictor</h1>
 					<YearSelector years={years} selectedYear={selectedYear} setSelectedYear={setSelectedYear} setSelectedRace={setSelectedRace} setDrivers={setDrivers} setPrediction={setPrediction} />
 					<RaceSelector races={races} selectedRace={selectedRace} setSelectedRace={setSelectedRace} setDrivers={setDrivers} setPrediction={setPrediction} />			
+					<ModelSelector models={models} selectedModel={selectedModel} setSelectedModel={setSelectedModel} />
 					<button onClick={handlePredict} disabled={!drivers.length} className="bg-gray-800 p-3 text-xl rounded-3xl">Predict!</button>		
 					<button onClick={handleClearInput} className="bg-gray-800 p-3 text-l rounded-3xl">Clear inputs</button>		
-					<div className="space-y-2 text-xs">
-						<div className="text-gray-300">Prediction Legend:</div>
-						<div className="inline-block bg-green-600 p-1 rounded">Gained Places</div> <br/>
-						<div className="inline-block bg-red-600 p-1 rounded">Lost Places</div>
+					<div className="flex flex-row items-start space-x-3">
+						<div className=" inline-block space-y-2 text-xs">
+							<div className="text-gray-300">Model Legend: </div>
+							<div className="inline-block bg-gray-800 p-1 rounded">GBR</div> Gradient boosting regression <br/>
+							<div className="inline-block bg-gray-800 p-1 rounded">MLP</div> Multi-layer perceptron regressor<br/>
+							<div className="inline-block bg-gray-800 p-1 rounded">CLF</div> Decision tree classifier<br/>
+							<div className="inline-block bg-gray-800 p-1 rounded">NB</div> Naive Bayes classifier<br/>
+						</div>
+						<div className="inline-block space-y-2 text-xs">
+							<div className="text-gray-300">Prediction Legend:</div>
+							<div className="inline-block bg-green-600 p-1 rounded">Gained Places</div> <br/>
+							<div className="inline-block bg-red-600 p-1 rounded">Lost Places</div>
+						</div>
 					</div>
 				</div>
 
