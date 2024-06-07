@@ -9,28 +9,30 @@ interface DriverArrangerProps {
 
 export default function DriverArranger({drivers, setDrivers, setOriginalFlag}: DriverArrangerProps) {
 	// Draggable list based on Darwin Tech: https://www.youtube.com/watch?v=_nZCvxJOPwU
-	const dragDriver = useRef<number>(0);
-	const draggedOverDriver = useRef<number>(0);
+	const dragDriver = useRef<number | null>(null);
+	const draggedOverDriver = useRef<number | null>(null);
 
 	function handleDriverSort() {
+    if (dragDriver.current === null || draggedOverDriver.current === null) return;
 		const driversClone = [...drivers];
 
     // Now predicting
     setOriginalFlag(false);
 
-		// Grid values
-		const currentPositionDrag: number = driversClone[dragDriver.current].grid;
-		const currentPositionOver: number = driversClone[draggedOverDriver.current].grid;
+    // Remove and insert the dragged item
+    const [movedItem] = driversClone.splice(dragDriver.current, 1);
+    driversClone.splice(draggedOverDriver.current, 0, movedItem);
 
-		// Swap positions
-		const temp = driversClone[dragDriver.current];
-		driversClone[dragDriver.current] = driversClone[draggedOverDriver.current];
-		driversClone[draggedOverDriver.current] = temp;
+    // Update grid values
+    driversClone.forEach((driver, index) => {
+      driver.grid = index + 1;
+    })
 
-		driversClone[dragDriver.current].grid = currentPositionDrag;
-		driversClone[draggedOverDriver.current].grid = currentPositionOver;
-		
-		setDrivers(driversClone);
+    // Update drivers list
+    setDrivers(driversClone);
+
+    dragDriver.current = null;
+    draggedOverDriver.current = null;
 	}
 	
 	return (
